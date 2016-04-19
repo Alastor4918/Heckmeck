@@ -11,7 +11,8 @@ import {
     LoginSuccess,
     Survey,
     NotFound,
-    LandingPage
+    LandingPage,
+    Rules
   } from 'containers';
 
 export default (store) => {
@@ -52,6 +53,7 @@ export default (store) => {
       <Route path="survey" component={Survey}/>
       <Route path="widgets" component={Widgets}/>
       <Route path="landing" component={LandingPage}/>
+      <Route path="rules" component={Rules}/>
 
       { /* Catch all route */ }
       <Route path="*" component={NotFound} status={404} />

@@ -14,6 +14,7 @@ import config from '../../config';
 import { asyncConnect } from 'redux-async-connect';
 import { Footer } from '../../components/Footer/Footer';
 
+
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
     const promises = [];
@@ -42,6 +43,7 @@ export default class App extends Component {
   static contextTypes = {
     store: PropTypes.object.isRequired
   };
+
 
   componentWillReceiveProps(nextProps) {
     if (!this.props.user && nextProps.user) {
@@ -93,6 +95,9 @@ export default class App extends Component {
               </LinkContainer>
               <LinkContainer to="/landing">
                 <NavItem eventKey={7}>Landing Page</NavItem>
+              </LinkContainer>
+              <LinkContainer to="/rules">
+                <NavItem eventKey={8}>Pravidla</NavItem>
               </LinkContainer>
 
               {!user &&

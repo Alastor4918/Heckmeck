@@ -6,9 +6,10 @@ import Helmet from 'react-helmet';
 
 export default class Home extends Component {
   render() {
+    console.log("Home", this.props);
     const styles = require('./Home.scss');
     // require the logo image both from client and server
-    const logoImage = require('./logo.png');
+    const logoImage = require('../../../static/logo.png');
     return (
       <div className={styles.home}>
         <Helmet title="Home"/>
