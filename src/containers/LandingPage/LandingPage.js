@@ -32,7 +32,7 @@ export default class LandingPage extends Component {
         </div>
         <div className={`text-center ${styles.button}`}>
           <span>
-            <a href="rules">PLAY NOW</a>
+            <Link to="/game">PLAY NOW</Link>
           </span>
         </div>
         <div className={`${styles['main-img']} text-center`}>

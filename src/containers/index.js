@@ -9,3 +9,4 @@ export Survey from './Survey/Survey';
 export NotFound from './NotFound/NotFound';
 export LandingPage from './LandingPage/LandingPage';
 export Rules from './Rules/Rules';
+export Game from './Game/Game';

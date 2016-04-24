@@ -4,7 +4,7 @@ import Helmet from 'react-helmet';
 export default class Rules extends Component {
   render(){
     return(
-      <div className="rules container">
+      <div className="rules container" style={{'marginTop': '50px'}}>
         <Helmet title="Rules"/>
         <h1 className="text-center">
           HECKMECK ( officialne pravidla )

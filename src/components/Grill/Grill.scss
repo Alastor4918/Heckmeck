@@ -1,0 +1,20 @@
+@import "../../theme/variables.scss";
+
+.grill {
+  background: pink;
+  display: block;
+  width: 38%;
+  padding: 10px;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.grillIcon {
+  padding: 10px;
+}
+
+.grillIconAvailable {
+  border: 1px solid red;
+  padding: 10px;
+}

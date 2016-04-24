@@ -8,12 +8,14 @@ import counter from './counter';
 import {reducer as form} from 'redux-form';
 import info from './info';
 import widgets from './widgets';
+import game from './game';
 
 export default combineReducers({
   routing: routeReducer,
   reduxAsyncConnect,
   auth,
   form,
+  game,
   multireducer: multireducer({
     counter1: counter,
     counter2: counter,

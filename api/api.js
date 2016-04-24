@@ -17,7 +17,7 @@ const server = new http.Server(app);
 const io = new SocketIo(server);
 io.path('/ws');
 
-sequelize.sync().then(() => {
+sequelize.sync({force: true}).then(() => {
   app.use(session({
     secret: 'react and redux rule!!!!',
     resave: false,

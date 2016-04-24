@@ -1,0 +1,29 @@
+@import "../../theme/variables.scss";
+
+.game {
+  background: #4da6ff;
+  position: relative;
+  min-height: 1000px;
+  padding-top: 50px;
+  h1 {
+    margin: 0;
+  }
+}
+
+.player-0 {
+  position: absolute;
+  top: 20%;
+  text-align: center;
+  left: 5%;
+}
+
+.player-1 {
+  position: absolute;
+  top: 20%;
+  text-align: center;
+  right: 5%;
+}
+
+.playerStone {
+  margin: 10px auto 10px auto;
+}

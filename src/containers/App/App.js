@@ -67,7 +67,7 @@ export default class App extends Component {
     return (
       <div className={styles.app}>
         <Helmet {...config.app.head}/>
-        <Navbar fixedTop>
+        <Navbar className={this.props.routes[1].path === "game" ? styles.none : ''} fixedTop>
           <Navbar.Header>
             <Navbar.Brand>
               <IndexLink to="/" activeStyle={{color: '#33e0ff'}}>
@@ -116,11 +116,14 @@ export default class App extends Component {
           </Navbar.Collapse>
         </Navbar>
 
-        <div className={styles.appContent}>
+        <div>
           {this.props.children}
         </div>
+        {this.props.routes[1].path !== "game"
+          ? <Footer/>
+          : ''
+        }
 
-        <Footer/>
       </div>
     );
   }
