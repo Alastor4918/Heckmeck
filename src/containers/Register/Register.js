@@ -4,7 +4,7 @@ import Helmet from 'react-helmet';
 import * as authActions from 'redux/modules/auth';
 
 @connect(
-  state => ({user: state.auth.user}),
+  state => ({auth: state.auth}),
   authActions)
 export default class Register extends Component {
 
@@ -36,8 +36,8 @@ export default class Register extends Component {
             </div>
             <button className="btn btn-success" onClick={this.handleSubmit}><i className="fa fa-sign-in"/>{' '}Register
             </button>
+            { this.props.auth.registerError ? <p className={styles.error}>{ this.props.auth.registerError }</p> : '' }
           </form>
-          <p>Create registration</p>
         </div>
         }
         {user &&

@@ -1,21 +1,21 @@
 /*
 Error: Invalid CSS after "nav :global(": expected pseudo_expr, was ".fa)"
-        on line 15 of App.scss
+        on line 16 of App.scss
 
-10:     height: $size;
 11:     background-size: 80%;
 12:     margin: 0 10px 0 0;
 13:     border-radius: $size / 2;
-14:   }
-15:   nav :global(.fa) {
-16:     font-size: 2em;
-17:     line-height: 20px;
-18:   }
-19:   .none {
-20:     display: none;
+14:     border: 0.5px solid #2d2d2d;
+15:   }
+16:   nav :global(.fa) {
+17:     font-size: 2em;
+18:     line-height: 20px;
+19:   }
+20:   .none {
+21:     display: none;
 
 Backtrace:
-App.scss:15
+App.scss:16
 /var/lib/gems/2.1.0/gems/sass-3.4.13/lib/sass/scss/parser.rb:1165:in `expected'
 /var/lib/gems/2.1.0/gems/sass-3.4.13/lib/sass/scss/parser.rb:1101:in `expected'
 /var/lib/gems/2.1.0/gems/sass-3.4.13/lib/sass/scss/parser.rb:1081:in `expr!'
@@ -76,4 +76,4 @@ App.scss:15
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Error: Invalid CSS after \"nav :global(\": expected pseudo_expr, was \".fa)\"\A         on line 15 of App.scss\A \A 10:     height: $size;\A 11:     background-size: 80%;\A 12:     margin: 0 10px 0 0;\A 13:     border-radius: $size / 2;\A 14:   }\A 15:   nav :global(.fa) {\A 16:     font-size: 2em;\A 17:     line-height: 20px;\A 18:   }\A 19:   .none {\A 20:     display: none;"; }
+  content: "Error: Invalid CSS after \"nav :global(\": expected pseudo_expr, was \".fa)\"\A         on line 16 of App.scss\A \A 11:     background-size: 80%;\A 12:     margin: 0 10px 0 0;\A 13:     border-radius: $size / 2;\A 14:     border: 0.5px solid #2d2d2d;\A 15:   }\A 16:   nav :global(.fa) {\A 17:     font-size: 2em;\A 18:     line-height: 20px;\A 19:   }\A 20:   .none {\A 21:     display: none;"; }

@@ -116,6 +116,12 @@ export function login(username, password) {
         username: username,
         password: password
       }
+    }).then((data) => {
+      if (data.error) {
+        throw data.error;
+      } else {
+        return data.result;
+      }
     })
   };
 }
@@ -131,9 +137,9 @@ export function register(nickname, username, password) {
       }
     }).then((response) => {
       if (response.response === 'error') {
-        throw 'fuck you';
+        throw response.msg;
       } else {
-        return 'ok';
+        return response.result;
       }
     })
   };

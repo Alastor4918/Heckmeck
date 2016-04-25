@@ -5,7 +5,6 @@ import Helmet from 'react-helmet';
 
 export default class LandingPage extends Component {
   render() {
-    console.log("WTF", this.props);
     const styles = require('./Landing.scss');
     // require the logo image both from client and server
     const logoImage = require('./static/heckmeck.png');

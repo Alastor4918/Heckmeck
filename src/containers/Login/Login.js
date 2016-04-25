@@ -5,14 +5,14 @@ import { Link } from 'react-router';
 import * as authActions from 'redux/modules/auth';
 
 @connect(
-  state => ({user: state.auth.user}),
+  state => ({auth: state.auth}),
   authActions)
 export default class Login extends Component {
   static propTypes = {
-    user: PropTypes.object,
+    auth: PropTypes.object,
     login: PropTypes.func,
     logout: PropTypes.func
-  }
+  };
 
   handleSubmit = (event) => {
     event.preventDefault();
@@ -21,11 +21,12 @@ export default class Login extends Component {
     this.props.login( username.value, password.value);
     username.value = '';
     password.value = '';
-  }
+  };
 
   render() {
     const {user, logout} = this.props;
     const styles = require('./Login.scss');
+    console.log("LOGIN MA", this.props);
     return (
       <div className={styles.loginPage + ' container'}>
         <Helmet title="Login"/>
@@ -39,13 +40,14 @@ export default class Login extends Component {
             </div>
             <button className="btn btn-success" onClick={this.handleSubmit}><i className="fa fa-sign-in"/>{' '}Log In
             </button>
+            { this.props.auth.loginError ? <p className={styles.error}>{ this.props.auth.loginError }</p> : '' }
           </form>
           <p>Dont have account ? <Link to="/register">Register now !</Link></p>
         </div>
         }
         {user &&
         <div>
-          <p>You are currently logged in as {user.name}.</p>
+          <p>You are currently logged in as {user.username}.</p>
 
           <div>
             <button className="btn btn-danger" onClick={logout}><i className="fa fa-sign-out"/>{' '}Log Out</button>

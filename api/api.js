@@ -66,11 +66,14 @@ sequelize.sync().then(() => {
   app.post('/register/', (req, res) => {
     const {nickname, username, password} = req.body;
     User.findOne({
-      username: username,
+      where: {
+        username: username
+      }
     }).then((data) => {
       if (data) {
         res.json({
           response: 'error',
+          msg: 'User already exits'
         });
       } else {
         const user = User.create({
@@ -78,10 +81,16 @@ sequelize.sync().then(() => {
           username: username,
           password: password,
         });
-        user.then(() => {
+        user.then((data) => {
+          req.logIn(user, (loginErr) => {
           res.json({
-            response: 'success',
-          })
+            result: {
+              nickname: data.nickname,
+              username: data.username
+            },
+            error: loginErr
+          });
+        });
         })
       }
     });

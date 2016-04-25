@@ -2,7 +2,9 @@ import { User } from '../models/index';
 
 export function login(username, password) {
   return User.findOne({
-    username: username
+    where: {
+      username: username
+    }
   }).then((user) => {
     if (!user) {
       return {
@@ -10,7 +12,6 @@ export function login(username, password) {
         error: "Incorrect username"
       };
     }
-
     if(password === user.password){
       return {
         result: user,

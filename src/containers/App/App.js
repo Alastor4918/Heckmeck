@@ -30,7 +30,7 @@ import { Footer } from '../../components/Footer/Footer';
   }
 }])
 @connect(
-  state => ({user: state.auth.user}),
+  state => ({user: state.auth.user, auth: state.auth}),
   {logout, pushState: routeActions.push})
 export default class App extends Component {
   static propTypes = {
@@ -63,7 +63,7 @@ export default class App extends Component {
   render() {
     const {user} = this.props;
     const styles = require('./App.scss');
-
+    console.log("v authe mam ", this.props.auth);
     return (
       <div className={styles.app}>
         <Helmet {...config.app.head}/>
@@ -80,22 +80,6 @@ export default class App extends Component {
 
           <Navbar.Collapse eventKey={0}>
             <Nav navbar>
-              {user && <LinkContainer to="/chat">
-                <NavItem eventKey={1}>Chat</NavItem>
-              </LinkContainer>}
-
-              <LinkContainer to="/widgets">
-                <NavItem eventKey={2}>Widgets</NavItem>
-              </LinkContainer>
-              <LinkContainer to="/survey">
-                <NavItem eventKey={3}>Survey</NavItem>
-              </LinkContainer>
-              <LinkContainer to="/about">
-                <NavItem eventKey={4}>About Us</NavItem>
-              </LinkContainer>
-              <LinkContainer to="/landing">
-                <NavItem eventKey={7}>Landing Page</NavItem>
-              </LinkContainer>
               <LinkContainer to="/rules">
                 <NavItem eventKey={8}>Pravidla</NavItem>
               </LinkContainer>
@@ -112,7 +96,7 @@ export default class App extends Component {
               </LinkContainer>}
             </Nav>
             {user &&
-            <p className={styles.loggedInMessage + ' navbar-text'}>Logged in as <strong>{user.name}</strong>.</p>}
+            <p className={styles.loggedInMessage + ' navbar-text'}>Logged in as <strong>{user.username}</strong>.</p>}
           </Navbar.Collapse>
         </Navbar>
 

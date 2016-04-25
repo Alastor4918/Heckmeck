@@ -12,6 +12,7 @@ Error: Invalid CSS after ":global(": expected pseudo_expr, was ".btn)"
 12:     }
 13:   }
 14: }
+15: 
 
 Backtrace:
 Register.scss:10
@@ -86,4 +87,4 @@ Register.scss:10
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Error: Invalid CSS after \":global(\": expected pseudo_expr, was \".btn)\"\A         on line 10 of Register.scss\A \A 5:     border-radius: 5px;\A 6:     border: 1px solid #ccc;\A 7:   }\A 8:   form {\A 9:     margin: 30px 0;\A 10:     :global(.btn) {\A 11:       margin-left: 10px;\A 12:     }\A 13:   }\A 14: }"; }
+  content: "Error: Invalid CSS after \":global(\": expected pseudo_expr, was \".btn)\"\A         on line 10 of Register.scss\A \A 5:     border-radius: 5px;\A 6:     border: 1px solid #ccc;\A 7:   }\A 8:   form {\A 9:     margin: 30px 0;\A 10:     :global(.btn) {\A 11:       margin-left: 10px;\A 12:     }\A 13:   }\A 14: }\A 15: "; }
