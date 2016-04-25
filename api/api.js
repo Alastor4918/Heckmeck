@@ -3,6 +3,9 @@ import session from 'express-session';
 import bodyParser from 'body-parser';
 import config from '../src/config';
 import * as actions from './actions/index';
+import { Strategy as LocalStrategy } from 'passport-local';
+import passport from 'passport';
+import { login } from './actions/login';
 import {mapUrl} from 'utils/url.js';
 import PrettyError from 'pretty-error';
 import http from 'http';
@@ -17,15 +20,72 @@ const server = new http.Server(app);
 const io = new SocketIo(server);
 io.path('/ws');
 
-sequelize.sync({force: true}).then(() => {
+sequelize.sync().then(() => {
   app.use(session({
-    secret: 'react and redux rule!!!!',
+    secret: 'alastor je awesome !!!',
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 60000 }
   }));
 
   app.use(bodyParser.json());
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  passport.serializeUser((user, done) => done(null, user.id));
+  passport.deserializeUser((user, done) => User.findOne({id: user}).then((result) => done(null, result)).catch((err) => done(err)));
+
+  passport.use(new LocalStrategy((username, password, done) => {
+    login(username, password).then((response) => done(response.error, response.result, null));
+  }));
+
+  app.post('/login/', (req, res, next) => passport.authenticate('local', (dbErr, user) => {
+    if (dbErr) {
+      res.json({
+        result: null,
+        error: dbErr,
+      });
+    } else {
+      req.logIn(user, (loginErr) => {
+        res.json({
+          result: {
+            nickname: user.nickname,
+            username: user.username
+          },
+          error: loginErr
+        });
+      });
+    }
+  })(req, res, next));
+
+  app.post('/logout/', (req, res) => {
+    req.logout();
+    res.json({});
+  });
+
+  app.post('/register/', (req, res) => {
+    const {nickname, username, password} = req.body;
+    User.findOne({
+      username: username,
+    }).then((data) => {
+      if (data) {
+        res.json({
+          response: 'error',
+        });
+      } else {
+        const user = User.create({
+          nickname: nickname,
+          username: username,
+          password: password,
+        });
+        user.then(() => {
+          res.json({
+            response: 'success',
+          })
+        })
+      }
+    });
+  });
 
   app.use((req, res) => {
     const splittedUrlPath = req.url.split('?')[0].split('/').slice(1);

@@ -5,7 +5,7 @@ export class Footer extends Component {
     const styles = require('./Footer.scss');
     return (
       <div className={styles.footer}>
-        Nice footer bjatch ! :)
+        Nice footer ! :)
       </div>
     )
   }

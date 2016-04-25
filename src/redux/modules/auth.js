@@ -1,9 +1,15 @@
 const LOAD = 'redux-example/auth/LOAD';
 const LOAD_SUCCESS = 'redux-example/auth/LOAD_SUCCESS';
 const LOAD_FAIL = 'redux-example/auth/LOAD_FAIL';
+
 const LOGIN = 'redux-example/auth/LOGIN';
 const LOGIN_SUCCESS = 'redux-example/auth/LOGIN_SUCCESS';
 const LOGIN_FAIL = 'redux-example/auth/LOGIN_FAIL';
+
+const REGISTER = 'redux-example/auth/REGISTER';
+const REGISTER_SUCCESS = 'redux-example/auth/REGISTER_SUCCESS';
+const REGISTER_FAIL = 'redux-example/auth/REGISTER_FAIL';
+
 const LOGOUT = 'redux-example/auth/LOGOUT';
 const LOGOUT_SUCCESS = 'redux-example/auth/LOGOUT_SUCCESS';
 const LOGOUT_FAIL = 'redux-example/auth/LOGOUT_FAIL';
@@ -51,6 +57,24 @@ export default function reducer(state = initialState, action = {}) {
         user: null,
         loginError: action.error
       };
+    case REGISTER:
+      return {
+        ...state,
+        registeringIn: true
+      };
+    case REGISTER_SUCCESS:
+      return {
+        ...state,
+        registeringIn: false,
+        user: action.result
+      };
+    case REGISTER_FAIL:
+      return {
+        ...state,
+        registeringIn: false,
+        user: null,
+        registerError: action.error
+      };
     case LOGOUT:
       return {
         ...state,
@@ -84,12 +108,32 @@ export function load() {
   };
 }
 
-export function login(name) {
+export function login(username, password) {
   return {
     types: [LOGIN, LOGIN_SUCCESS, LOGIN_FAIL],
     promise: (client) => client.post('/login', {
       data: {
-        name: name
+        username: username,
+        password: password
+      }
+    })
+  };
+}
+
+export function register(nickname, username, password) {
+  return {
+    types: [REGISTER, REGISTER_SUCCESS, REGISTER_FAIL],
+    promise: (client) => client.post('/register', {
+      data: {
+        nickname: nickname,
+        username: username,
+        password: password
+      }
+    }).then((response) => {
+      if (response.response === 'error') {
+        throw 'fuck you';
+      } else {
+        return 'ok';
       }
     })
   };

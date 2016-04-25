@@ -13,7 +13,8 @@ import {
     NotFound,
     LandingPage,
     Rules,
-    Game
+    Game,
+    Register
   } from 'containers';
 
 export default (store) => {
@@ -56,6 +57,7 @@ export default (store) => {
       <Route path="landing" component={LandingPage}/>
       <Route path="rules" component={Rules}/>
       <Route path="game" component={Game}/>
+      <Route path="register" component={Register}/>
 
       { /* Catch all route */ }
       <Route path="*" component={NotFound} status={404} />

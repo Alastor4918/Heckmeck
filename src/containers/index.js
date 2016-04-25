@@ -10,3 +10,4 @@ export NotFound from './NotFound/NotFound';
 export LandingPage from './LandingPage/LandingPage';
 export Rules from './Rules/Rules';
 export Game from './Game/Game';
+export Register from './Register/Register';

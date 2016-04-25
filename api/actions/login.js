@@ -1,7 +1,21 @@
-export default function login(req) {
-  const user = {
-    name: req.body.name
-  };
-  req.session.user = user;
-  return Promise.resolve(user);
+import { User } from '../models/index';
+
+export function login(username, password) {
+  return User.findOne({
+    username: username
+  }).then((user) => {
+    if (!user) {
+      return {
+        result: null,
+        error: "Incorrect username"
+      };
+    }
+
+    if(password === user.password){
+      return {
+        result: user,
+        error: null
+      };
+    }
+  });
 }
