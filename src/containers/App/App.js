@@ -63,7 +63,6 @@ export default class App extends Component {
   render() {
     const {user} = this.props;
     const styles = require('./App.scss');
-    console.log("v authe mam ", this.props.auth);
     return (
       <div className={styles.app}>
         <Helmet {...config.app.head}/>

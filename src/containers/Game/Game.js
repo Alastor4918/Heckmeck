@@ -18,6 +18,7 @@ export default class Game extends Component {
       <div className={ `${styles.game} + 'container text-center'`}>
         <Helmet title="Hackmeck"/>
         <h1 className="text-center"> Na tahu je hrac cislo: {this.props.game.playerTurn} </h1>
+        <h3 className="text-center">Aktualne ma nahadzanych {this.props.game.dices.score} bodov.</h3>
         {this.props.game.playerList.map((player, index) =>
           {
             return(

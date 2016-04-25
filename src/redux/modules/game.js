@@ -1,5 +1,6 @@
 const FLIP_ICON = 'game/flipIcon';
 const ROLL_DICES = 'game/rollDices';
+const PICK_DICE = 'game/pickDice';
 
 const initialState = {
   numberOfPlayers: 2,
@@ -101,6 +102,8 @@ const initialState = {
   dices: {
     remaining: 8,
     rolled: false,
+    score: 0,
+    alreadyTakenValues: [],
     values :[
       0,0,0,0,0,0,0,0
     ]
@@ -121,10 +124,21 @@ export default function reducer(state = initialState, action = {}) {
           }
         }
       };
-    case ROLL_DICES:
+    case PICK_DICE:
       return {
         ...state,
         dices: {
+          remaining: action.remaining,
+          rolled: false,
+          score: action.newScore,
+          alreadyTakenValues: action.taken,
+          values : action.newDices
+        }
+      };
+    case ROLL_DICES:
+      return {
+        ...state,
+        dices:{
           ...state.dices,
           rolled: true,
           values: action.values
@@ -141,4 +155,8 @@ export function flipIcon(index) {
 
 export function rollDices(values) {
   return { type: ROLL_DICES, values};
+}
+
+export function pickDice(remaining, newScore, newDices, taken) {
+  return { type: PICK_DICE, remaining, newScore, newDices, taken }
 }
