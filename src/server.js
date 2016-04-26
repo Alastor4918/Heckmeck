@@ -109,7 +109,7 @@ app.use((req, res) => {
 });
 
 if (config.port) {
-  server.listen(config.port, (err) => {
+  server.listen(config.port, "127.0.0.1", (err) => {
     if (err) {
       console.error(err);
     }
