@@ -12,7 +12,6 @@ import { InfoBar } from 'components';
 import { routeActions } from 'react-router-redux';
 import config from '../../config';
 import { asyncConnect } from 'redux-async-connect';
-import { Footer } from '../../components/Footer/Footer';
 
 
 @asyncConnect([{
@@ -102,11 +101,6 @@ export default class App extends Component {
         <div>
           {this.props.children}
         </div>
-        {this.props.routes[1].path !== "game"
-          ? <Footer/>
-          : ''
-        }
-
       </div>
     );
   }

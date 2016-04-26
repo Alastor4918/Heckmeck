@@ -39,6 +39,11 @@ export default class Game extends Component {
         }
         <Grill/>
         <Dices/>
+        <div className={ styles.endTurn }>
+          <button className={ styles.endTurnButton}>
+            End Turn
+          </button>
+        </div>
       </div>
     );
   }

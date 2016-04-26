@@ -19,82 +19,66 @@ const initialState = {
   ],
   grill: {
     21: {
-      available: true,
       active: true,
       taken: false
     },
     22: {
-      available: false,
       active: true,
       taken: false
     },
     23: {
-      available: false,
       active: true,
       taken: false
     },
     24: {
-      available: false,
       active: true,
       taken: false
     },
     25: {
-      available: false,
       active: true,
       taken: false
     },
     26: {
-      available: false,
       active: true,
       taken: false
     },
     27: {
-      available: false,
       active: true,
       taken: false
     },
     28: {
-      available: false,
       active: true,
       taken: false
     },
     29: {
-      available: false,
       active: true,
       taken: false
     },
     30: {
-      available: false,
       active: true,
       taken: false
     },
     31: {
-      available: false,
       active: true,
       taken: false
     },
     32: {
-      available: false,
       active: true,
       taken: false
     },
     33: {
-      available: false,
       active: true,
       taken: false
     },
     34: {
-      available: false,
       active: true,
       taken: false
     },
     35: {
-      available: false,
       active: true,
       taken: false
     },
     36: {
-      available: false,
       active: true,
       taken: false
     }
