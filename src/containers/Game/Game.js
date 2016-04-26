@@ -4,6 +4,7 @@ import Helmet from 'react-helmet';
 import { Grill } from '../../components/Grill/Grill';
 import { Dices } from '../../components/Dices/Dices';
 import { PlayerStone } from './PlayerStone';
+import { EndModal } from '../../components/EndModal/EndModal';
 import * as GameActions from '../../redux/modules/game'
 
 
@@ -92,6 +93,7 @@ export default class Game extends Component {
             End Turn
           </button>
         </div>
+        <EndModal/>
       </div>
     );
   }
