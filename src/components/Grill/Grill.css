@@ -6,7 +6,7 @@
  *
  */
 .grill {
-  background: pink;
+  background: #FABE28;
   display: block;
   width: 40%;
   padding: 10px;
@@ -15,10 +15,11 @@
   margin-right: auto; }
 
 .grillIcon {
-  padding: 10px; }
+  padding: 10px;
+  margin: 2px; }
 
 .grillIconAvailable {
-  border: 1px solid red;
+  border: 1px solid #8b2c30;
   padding: 10px;
   margin: 1px; }
 
