@@ -8,10 +8,9 @@ import { GrillItem } from './GrillItem';
   )
 export class Grill extends Component {
   render() {
-    console.log("Grill", this.props);
     const styles = require('./Grill.scss');
     let grill = [];
-    Object.keys(this.props.grill).forEach((key, index) => grill.push(<GrillItem key={index} index={key} icon={this.props.grill[key]} />) );
+    Object.keys(this.props.grill).forEach((key, index) => grill.push(<GrillItem key={index}  index={key} icon={this.props.grill[key]} />) );
 
     return (
       <div className={styles.grill}>

@@ -15,6 +15,7 @@
   top: 20%;
   text-align: center;
   left: 5%;
+  width: 250px;
 }
 
 .player-1 {
@@ -22,8 +23,23 @@
   top: 20%;
   text-align: center;
   right: 5%;
+  width: 250px;
+}
+
+.dice {
+  margin: 2px;
 }
 
 .playerStone {
-  margin: 10px auto 10px auto;
+  margin: 15px auto 10px auto;
+}
+
+.playerStoneAvailable {
+  border: 1px solid red;
+  padding: 5px;
+  margin: 1px;
+}
+
+.endTurn {
+  margin-top: 30px;
 }

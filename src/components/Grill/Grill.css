@@ -8,7 +8,7 @@
 .grill {
   background: pink;
   display: block;
-  width: 38%;
+  width: 40%;
   padding: 10px;
   margin-top: 20px;
   margin-left: auto;
@@ -19,6 +19,7 @@
 
 .grillIconAvailable {
   border: 1px solid red;
-  padding: 10px; }
+  padding: 10px;
+  margin: 1px; }
 
 /*# sourceMappingURL=Grill.css.map */

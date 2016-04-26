@@ -19,12 +19,11 @@ export class Dices extends Component {
   }
   render() {
     const styles = require('./Dices.scss');
-    console.log("DICEES", this.props);
     const dices=this.props.dices.values.map( (value,index) => <Dice key={index} value={value}/> );
     return (
       <div className={ styles.dices }>
         { dices }
-        { !this.props.dices.rolled ? <div className={ styles.button } onClick={() => this.roll()}>Roll</div> : '' }
+        { !this.props.dices.rolled && !this.props.end ? <div className={ styles.button } onClick={() => this.roll()}>Roll</div> : '' }
       </div>
     )
   }

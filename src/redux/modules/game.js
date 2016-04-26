@@ -1,8 +1,11 @@
-const FLIP_ICON = 'game/flipIcon';
+const PICK_STONE = 'game/pickStone';
 const ROLL_DICES = 'game/rollDices';
 const PICK_DICE = 'game/pickDice';
+const STEAL_STONE = 'game/stealStone';
+const END_GAME = 'game/endGame';
 
 const initialState = {
+  endGame: false,
   numberOfPlayers: 2,
   playerTurn: 0,
   playerList: [
@@ -96,16 +99,36 @@ const initialState = {
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    case FLIP_ICON:
+    case END_GAME:
       return {
         ...state,
-        grill: {
-          ...state.grill,
-          [action.index]: {
-            active: false,
-            available: false,
-            taken: !state.grill[action.index].taken
-          }
+        endGame: action.value
+      };
+    case PICK_STONE:
+      return {
+        ...state,
+        playerTurn: (state.playerTurn+1) % state.numberOfPlayers,
+        playerList: action.pList,
+        grill: action.grill,
+        dices: {
+          remaining: 8,
+          rolled: false,
+          score: 0,
+          alreadyTakenValues: [],
+          values: action.dices
+        }
+      };
+    case STEAL_STONE:
+      return {
+        ...state,
+        playerTurn: (state.playerTurn+1) % state.numberOfPlayers,
+        playerList: action.pList,
+        dices: {
+          remaining: 8,
+          rolled: false,
+          score: 0,
+          alreadyTakenValues: [],
+          values: action.dices
         }
       };
     case PICK_DICE:
@@ -133,8 +156,8 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export function flipIcon(index) {
-  return { type: FLIP_ICON, index };
+export function pickStone(pList, grill, dices) {
+  return { type: PICK_STONE, pList, grill, dices };
 }
 
 export function rollDices(values) {
@@ -143,4 +166,12 @@ export function rollDices(values) {
 
 export function pickDice(remaining, newScore, newDices, taken) {
   return { type: PICK_DICE, remaining, newScore, newDices, taken }
+}
+
+export function stealStone(pList, dices){
+  return { type: STEAL_STONE, pList, dices };
+}
+
+export function endGame(value){
+  return { type: END_GAME, value };
 }
