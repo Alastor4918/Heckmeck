@@ -3,6 +3,7 @@ const ROLL_DICES = 'game/rollDices';
 const PICK_DICE = 'game/pickDice';
 const STEAL_STONE = 'game/stealStone';
 const END_GAME = 'game/endGame';
+const UPDATE_STATE= 'game/updateState';
 
 const initialState = {
   endGame: false,
@@ -12,11 +13,13 @@ const initialState = {
     {
       name: "Player 0",
       score: 0,
+      isBot: false,
       stones: []
     },
     {
       name: "Player 1",
       score: 0,
+      isBot: false,
       stones: []
     }
   ],
@@ -99,6 +102,8 @@ const initialState = {
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
+    case UPDATE_STATE:
+      return action.data;
     case END_GAME:
       return {
         ...state,
@@ -174,4 +179,8 @@ export function stealStone(pList, dices){
 
 export function endGame(value){
   return { type: END_GAME, value };
+}
+
+export function updateState(data) {
+  return {type: UPDATE_STATE, data}
 }

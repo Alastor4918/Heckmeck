@@ -9,52 +9,30 @@ import * as GameActions from '../../redux/modules/game'
 
 
 @connect(state =>
-  ({game : state.game }), GameActions)
+  ({game : state.game,
+    user : state.auth.user}), GameActions)
 export default class Game extends Component {
-  isEnd() {
-    let end = true;
-    Object.keys(this.props.game.grill).forEach((key) =>
-      { end= end && (!this.props.game.grill[key].active || this.props.game.grill[key].taken); }
-    );
-    this.props.endGame(end);
-  }
-  endTurn(end){
-    if(!end) {
-      let newGrill = this.props.game.grill;
-      let newPlayerList = this.props.game.playerList;
-      if (newPlayerList[this.props.game.playerTurn].stones.length) {
-        let stone = newPlayerList[this.props.game.playerTurn].stones.pop();
-        newGrill[stone].taken = false;
-        if (+stone !== 36) {
-          for (let index = 36; index >= 21; index--) {
-            if (!newGrill[index].taken && newGrill[index].active) {
-              newGrill[index].active = false;
-              break;
-            }
-          }
-        }
 
-        let score = 0;
-        if (stone <= 24)
-          score = 1;
-        else if (stone <= 28)
-          score = 2;
-        else if (stone <= 32)
-          score = 3;
-        else
-          score = 4;
-
-        newPlayerList[this.props.game.playerTurn].score -= score;
+  componentDidMount() {
+    if (socket) {
+      socket.on('update state', (state) => {
+        console.log("Idem updatovat state", state);
+        this.props.updateState(state);
+      });
+      if(this.props.user){
+        socket.emit('game started', this.props.user.username);
       }
-      const values = [0, 0, 0, 0, 0, 0, 0, 0];
-      this.props.pickStone(newPlayerList, newGrill, values);
-      this.isEnd();
+    }
+  }
+
+  componentWillUnmount() {
+    if (socket) {
+      socket.removeListener('update state');
     }
   }
 
   render() {
     const styles = require('./Game.scss');
-
     let taken=[];
     this.props.game.dices.alreadyTakenValues.map((value, index) => {
       let imgSrc = require(`../../components/Dices/static/${value}.png`);
@@ -63,10 +41,10 @@ export default class Game extends Component {
       )
     });
 
-    return (
+    return (this.props.user &&
       <div className={ `${styles.game} + 'container text-center'`}>
         <Helmet title="Hackmeck"/>
-        <h1 className="text-center"> Na tahu je hrac cislo: {this.props.game.playerTurn} </h1>
+        <h1 className="text-center"> Na tahu je hrac : {this.props.game.playerList[this.props.game.playerTurn].name} </h1>
         <h3 className="text-center">Aktualne ma nahadzanych {this.props.game.dices.score} bodov.</h3>
         {this.props.game.playerList.map((player, index) =>
           {
@@ -89,7 +67,15 @@ export default class Game extends Component {
         <Grill/>
         <Dices end={this.props.game.endGame }/>
         <div className={`text-center ${styles.endTurn}`}>
-          <button onClick={() => this.endTurn(this.props.game.endGame)} className={styles.endTurnButton}>
+          <button
+            onClick={() => {
+              if(socket){
+                console.log("idem emitit konec kola");
+                socket.emit('end turn', this.props.user.username);
+              }
+            }}
+            className={styles.endTurnButton}
+          >
             End Turn
           </button>
         </div>
