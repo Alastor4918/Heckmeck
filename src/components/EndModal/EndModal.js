@@ -4,7 +4,8 @@ import { Link } from 'react-router';
 import { Modal } from 'react-bootstrap';
 
 @connect(
-  state => ({game: state.game})
+  state => ({game: state.game,
+             user : state.auth.user})
   )
 export class EndModal extends Component {
   render() {
@@ -30,7 +31,7 @@ export class EndModal extends Component {
             And the winner is { winnerName } with score { winnerScore }.
           </div>
           <div>
-            Do you want to play <a href="/game">again</a> ?
+            Do you want to play <Link to="/game"><span onClick={()=>{if(socket)socket.emit('restart game', this.props.user.username)}}>again</span></Link> ?
             <br/>
             Or would you rather get back to <Link to="/">Home page</Link> ?
           </div>

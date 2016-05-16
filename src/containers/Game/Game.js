@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import {Link} from 'react-router';
 import Helmet from 'react-helmet';
 import { Grill } from '../../components/Grill/Grill';
 import { Dices } from '../../components/Dices/Dices';
@@ -41,45 +42,55 @@ export default class Game extends Component {
       )
     });
 
-    return (this.props.user &&
+
+    return (
       <div className={ `${styles.game} + 'container text-center'`}>
         <Helmet title="Hackmeck"/>
-        <h1 className="text-center"> Na tahu je hrac : {this.props.game.playerList[this.props.game.playerTurn].name} </h1>
-        <h3 className="text-center">Aktualne ma nahadzanych {this.props.game.dices.score} bodov.</h3>
-        {this.props.game.playerList.map((player, index) =>
-          {
-            return(
-              <div key={index} className={styles[`player-${index}`]}>
-                <h1>{player.name}</h1>
-                <PlayerStone player={ player } playerID={ index } />
-                <div className={styles.score}>Score: {player.score}</div>
-                <div className={ styles.takenDices }>
-                  { index == this.props.game.playerTurn
-                    ? taken
-                    : ''
-                  }
+        {this.props.user
+        ?
+        <div>
+          <h1 className="text-center"> Na tahu je hrac : {this.props.game.playerList[this.props.game.playerTurn].name} </h1>
+          <h3 className="text-center">Aktualne ma nahadzanych {this.props.game.dices.score} bodov.</h3>
+          {this.props.game.playerList.map((player, index) =>
+            {
+              return(
+                <div key={index} className={styles[`player-${index}`]}>
+                  <h1>{player.name}</h1>
+                  <PlayerStone player={ player } playerID={ index } />
+                  <div className={styles.score}>Score: {player.score}</div>
+                  <div className={ styles.takenDices }>
+                    { index == this.props.game.playerTurn
+                      ? taken
+                      : ''
+                    }
+                  </div>
                 </div>
-              </div>
-            )
+              )
+            }
+          )
           }
-        )
-        }
-        <Grill/>
-        <Dices end={this.props.game.endGame }/>
-        <div className={`text-center ${styles.endTurn}`}>
-          <button
-            onClick={() => {
-              if(socket){
-                console.log("idem emitit konec kola");
-                socket.emit('end turn', this.props.user.username);
-              }
-            }}
-            className={styles.endTurnButton}
-          >
-            End Turn
-          </button>
+          <Grill/>
+          <Dices end={this.props.game.endGame }/>
+          <div className={`text-center ${styles.endTurn}`}>
+            <button
+              onClick={() => {
+                if(socket){
+                  console.log("idem emitit konec kola");
+                  socket.emit('end turn', this.props.user.username);
+                }
+              }}
+              className={styles.endTurnButton}
+            >
+              End Turn
+            </button>
+          </div>
+          <EndModal/>
         </div>
-        <EndModal/>
+      :
+        <div>
+          <h1 className={styles.loginReq}>Musite byt prihlaseny ak chcete hrat <Link to="/login">Prihlasit teraz</Link></h1>
+        </div>
+        }
       </div>
     );
   }

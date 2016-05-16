@@ -123,14 +123,95 @@ sequelize.sync().then(() => {
     }
   });
 
+  // GAME GREEDY BOT
+  function botPlay(user) {
+    rollDices(user, true);
+    setTimeout(() => {
+      if(canPickSomeDice(user)){
+        if(userGame[user].dices.alreadyTakenValues.includes(6) || !userGame[user].dices.values.includes(6)){
+          let possibleVal={};
+          for(let x=0; x < userGame[user].dices.values.length;x++){
+            let val= userGame[user].dices.values[x];
+            if(!userGame[user].dices.alreadyTakenValues.includes(val)){
+              if(possibleVal[val]){
+                possibleVal[val]+=1;
+              }
+              else {
+                possibleVal[val]=1;
+              }
+            }
+          }
+          let maxVal=0;
+          let maxDice=0;
+          Object.keys(possibleVal).forEach(
+            (key) => {
+              if(+key*possibleVal[key] > maxVal){
+                maxVal=+key*possibleVal[key];
+                maxDice=+key;
+              }
+              else if(+key*possibleVal[key] === maxVal){
+                if(possibleVal[key] < possibleVal[maxDice]){
+                  maxDice=+key;
+                }
+              }
+            }
+          );
+          pickDice({user: user, value: maxDice}, true);
+        }
+        else {
+          pickDice({user: user, value: 6}, true);
+        }
+        setTimeout(() => checkStonePick(user), 1000);
+      }
+      else {
+          endTurn(user, true);
+      }
+    }, 1500);
+  }
 
+  function checkStonePick(user) {
+    if(pickPlayerStone({user: user, id: userGame[user].playerTurn}, true)){
+      isEnd(user);
+    }
+    else {
+      let maxVal = 0;
+      for (let x = 21; x < 37; x++) {
+        if (isStoneAvailable({user: user, value: x})) {
+          maxVal = x;
+        }
+      }
+
+      if (maxVal !== 0) {
+        pickStone({user: user, value: maxVal}, true);
+      }
+      else {
+        botPlay(user);
+      }
+    }
+  }
+
+  function canPickSomeDice(user) {
+    let result = false;
+    const values = userGame[user].dices.values;
+    for(let x=0;x < values.length;x++){
+      if(!userGame[user].dices.alreadyTakenValues.includes(values[x])){
+        result=true;
+      }
+    }
+
+    return result;
+  }
+
+  // END GAME GREEDY BOT
 
   // GAME FUNCTIONS
   const userSocket = {};
   const userGame = {};
-  function endTurn(user){
+
+
+  function endTurn(user, isBot = false){
     const game = userGame[user];
-    if(!game.endGame) {
+    if((game.playerList[game.playerTurn].name === user || isBot) && !game.endGame) {
       if (game.playerList[game.playerTurn].stones.length) {
         let stone = game.playerList[game.playerTurn].stones.pop();
         game.grill[stone].taken = false;
@@ -176,12 +257,15 @@ sequelize.sync().then(() => {
       { end= end && (!game.grill[key].active || game.grill[key].taken); }
     );
     userGame[user].endGame= end;
-    userSocket[user].emit('update state', userGame[user])
+    userSocket[user].emit('update state', userGame[user]);
+    if(userGame[user].playerList[userGame[user].playerTurn].isBot){
+      botPlay(user, userGame[user].playerTurn);
+    }
   }
 
-  function rollDices(user){
+  function rollDices(user, isBot = false){
     const game = userGame[user];
-    if(!game.dices.rolled){
+    if((game.playerList[game.playerTurn].name === user || isBot) && !game.dices.rolled){
       let values=[];
       for(let i=0;i<game.dices.remaining;i++){
         values.push(Math.floor(Math.random() * 6) + 1);
@@ -192,10 +276,10 @@ sequelize.sync().then(() => {
     }
   }
 
-  function pickDice(data) {
+  function pickDice(data, isBot = false) {
     const {user, value} = data;
     const game = userGame[user];
-    if(game.dices.rolled && !game.dices.alreadyTakenValues.includes(value)){
+    if((game.playerList[game.playerTurn].name === user || isBot) && game.dices.rolled && !game.dices.alreadyTakenValues.includes(value)){
       let numberOfDices=0;
       for(let x=0;x < game.dices.values.length;x++) {
         if(game.dices.values[x] === value){
@@ -236,10 +320,10 @@ sequelize.sync().then(() => {
             game.dices.alreadyTakenValues.includes(6)
   }
 
-  function pickStone(data) {
+  function pickStone(data, isBot = false) {
     const {user, value} = data;
     const game = userGame[user];
-    if(isStoneAvailable(data)){
+    if((game.playerList[game.playerTurn].name === user || isBot) && isStoneAvailable(data)){
       game.grill[value].taken =true;
       game.playerList[game.playerTurn].stones.push(value);
       let cerv=0;
@@ -252,7 +336,7 @@ sequelize.sync().then(() => {
       else
         cerv=4;
       game.playerList[game.playerTurn].score += cerv;
-      userGame[user].dices = {
+      game.dices = {
           remaining: 8,
           rolled: false,
           score: 0,
@@ -262,6 +346,65 @@ sequelize.sync().then(() => {
       game.playerTurn= (game.playerTurn+1) % game.numberOfPlayers;
       isEnd(user);
     }
+  }
+
+  function isAvailablePlayerStone(data) {
+    const {user, id}= data;
+    const player = userGame[user].playerList[id];
+    return  player.stones.length !==0 &&
+            (+player.stones[player.stones.length-1] === userGame[user].dices.score) &&
+            !userGame[user].dices.rolled &&
+            userGame[user].dices.alreadyTakenValues.includes(6) &&
+            userGame[user].playerTurn !== id
+  }
+
+  function pickPlayerStone(data, isBot = false) {
+    const {user, id} = data;
+    const game = userGame[user];
+    let pickPlayerStoneId=-1;
+
+    if(isBot) {
+      for(let i=0;i<game.playerList.length;i++) {
+        if (isAvailablePlayerStone({user: user, id: i})) {
+          pickPlayerStoneId = i;
+        }
+      }
+    }
+    else if(isAvailablePlayerStone({user: user, id: id})){
+      pickPlayerStoneId=id;
+    }
+
+    if (pickPlayerStoneId !== -1) {
+      const stone = game.playerList[pickPlayerStoneId].stones.pop();
+      game.playerList[game.playerTurn].stones.push(stone);
+      let cerv=0;
+      if(stone <=24)
+        cerv=1;
+      else if(stone <=28)
+        cerv=2;
+      else if(stone <=32)
+        cerv=3;
+      else
+        cerv=4;
+      game.playerList[game.playerTurn].score += cerv;
+      game.playerList[pickPlayerStoneId].score -= cerv;
+      game.dices = {
+          remaining: 8,
+          rolled: false,
+          score: 0,
+          alreadyTakenValues: [],
+          values: [0,0,0,0,0,0,0,0]
+        };
+      game.playerTurn= (game.playerTurn+1) % game.numberOfPlayers;
+      if(isBot){
+        return true;
+      }
+      else {
+        isEnd(user);
+      }
+    }
+    if(isBot)
+      return false;
   }
 
   // END GAME FUNCTIONS
@@ -298,12 +441,18 @@ sequelize.sync().then(() => {
       socket.on('game started',(username) => {
         console.log("ZACINAME ", username);
         userSocket[username]=socket;
-        userGame[username]=defaultState;
+        userGame[username]=JSON.parse(JSON.stringify(defaultState));
         userGame[username].playerList[0].name=username;
         socket.emit('update state', userGame[username]);
       });
+
+      socket.on('restart game', (username) => {
+        userGame[username]=JSON.parse(JSON.stringify(defaultState));
+        userGame[username].playerList[0].name=username;
+        userSocket[username].emit('update state', userGame[username]);
+      });
+
       socket.on('end turn', (username) => {
-        console.log("idem skoncit kolo s ", username);
         endTurn(username);
       });
 
@@ -318,6 +467,10 @@ sequelize.sync().then(() => {
 
       socket.on('pick stone', (data) => {
         pickStone(data);
+      });
+
+      socket.on('pick player stone', (data) => {
+        pickPlayerStone(data);
       });
 
       socket.on('msg', (data) => {
