@@ -24,16 +24,16 @@ export class EndModal extends Component {
         className={ styles.endModal }
       >
         <Modal.Header className="text-center">
-          End Game !
+          Koniec Hry !
         </Modal.Header>
         <Modal.Body className="text-center">
           <div className={styles.winner}>
-            And the winner is { winnerName } with score { winnerScore }.
+            Vyhral { winnerName } so score { winnerScore }.
           </div>
           <div>
-            Do you want to play <Link to="/game"><span onClick={()=>{if(socket)socket.emit('restart game', this.props.user.username)}}>again</span></Link> ?
+            Hrat ? <Link to="/game"><span onClick={()=>{if(socket)socket.emit('restart game', this.props.user.username)}}>znovu</span></Link> ?
             <br/>
-            Or would you rather get back to <Link to="/">Home page</Link> ?
+            Alebo spat na <Link to="/">Home page</Link> ?
           </div>
         </Modal.Body>
 
