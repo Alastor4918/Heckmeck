@@ -9,7 +9,9 @@ import {
     LandingPage,
     Rules,
     Game,
-    Register
+    Register,
+    Lobby,
+    LobbyRoom
   } from 'containers';
 
 export default (store) => {
@@ -41,12 +43,14 @@ export default (store) => {
       { /* Routes requiring login */ }
       <Route onEnter={requireLogin}>
         <Route path="loginSuccess" component={LoginSuccess}/>
+        <Route path="lobby" component={Lobby} />
+        <Route path="lobbyRoom" component={LobbyRoom} />
+        <Route path="game" component={Game}/>
       </Route>
 
       { /* Routes */ }
       <Route path="login" component={Login}/>
       <Route path="rules" component={Rules}/>
-      <Route path="game" component={Game}/>
       <Route path="register" component={Register}/>
 
       { /* Catch all route */ }

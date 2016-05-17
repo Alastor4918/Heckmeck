@@ -10,6 +10,7 @@ import * as GameActions from '../../redux/modules/game'
   )
 export class Dices extends Component {
   render() {
+    console.log("idem posielat update ako ", this.props.user.username);
     const styles = require('./Dices.scss');
     const dices=this.props.dices.values.map( (value,index) => <Dice key={index} value={value}/> );
     return (this.props.user &&

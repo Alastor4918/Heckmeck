@@ -11,7 +11,7 @@ import PrettyError from 'pretty-error';
 import http from 'http';
 import SocketIo from 'socket.io';
 import { defaultState }  from './defaultGame'
-import { sequelize, User } from './models/index'; // TAKTO sa to includuje
+import { sequelize, User, Game, Score, Lobby } from './models/index'; // TAKTO sa to includuje
 
 const pretty = new PrettyError();
 const app = express();
@@ -215,7 +215,8 @@ sequelize.sync().then(() => {
       if (game.playerList[game.playerTurn].stones.length) {
         let stone = game.playerList[game.playerTurn].stones.pop();
         game.grill[stone].taken = false;
-        if (+stone !== 36) {
+        const maxOnGrill = findMaxOnGrill(user);
+        if (+stone !== maxOnGrill) {
           for (let index = 36; index >= 21; index--) {
             if (!game.grill[index].taken && game.grill[index].active) {
               game.grill[index].active = false;
@@ -257,7 +258,20 @@ sequelize.sync().then(() => {
       { end= end && (!game.grill[key].active || game.grill[key].taken); }
     );
     userGame[user].endGame= end;
-    userSocket[user].emit('update state', userGame[user]);
+    if(end){
+      game.playerList.map((player) => {
+        if(!player.isBot){
+          createScore({user: player.name, score: player.score, status: "win"});
+        }
+      });
+    }
+
+    game.playerList.map((player) => {
+      if(!player.isBot){
+        userGame[player.name]=userGame[user];
+        userSocket[player.name].emit('update state', userGame[user]);
+      }
+    });
     if(userGame[user].playerList[userGame[user].playerTurn].isBot){
       botPlay(user, userGame[user].playerTurn);
     }
@@ -265,6 +279,7 @@ sequelize.sync().then(() => {
 
   function rollDices(user, isBot = false){
     const game = userGame[user];
+    console.log("WTF ", game, " hadzat mozes ak ", game.playerList[game.playerTurn].name, " poslal mi to ", user, " neni som ", isBot);
     if((game.playerList[game.playerTurn].name === user || isBot) && !game.dices.rolled){
       let values=[];
       for(let i=0;i<game.dices.remaining;i++){
@@ -272,7 +287,12 @@ sequelize.sync().then(() => {
       }
       userGame[user].dices.values=values;
       userGame[user].dices.rolled=true;
-      userSocket[user].emit('update state', userGame[user])
+      game.playerList.map((player) => {
+        if(!player.isBot){
+          userGame[player.name]=userGame[user];
+          userSocket[player.name].emit('update state', userGame[user]);
+        }
+      });
     }
   }
 
@@ -306,8 +326,26 @@ sequelize.sync().then(() => {
       userGame[user].dices.remaining = remaining;
       userGame[user].dices.rolled = false;
       userGame[user].dices.score = newScore;
-      userSocket[user].emit('update state', userGame[user])
+      game.playerList.map((player) => {
+        if(!player.isBot){
+          userGame[player.name]=userGame[user];
+          userSocket[player.name].emit('update state', userGame[user]);
+        }
+      });
     }
+  }
+
+
+
+  function findMaxOnGrill(user){
+    const game = userGame[user];
+    let maxVal = 0;
+    for (let x = 21; x < 37; x++) {
+      if (game.grill[x].active && !game.grill[x].taken) {
+        maxVal = x;
+      }
+    }
+    return maxVal;
   }
 
   function isStoneAvailable(data) {
@@ -409,6 +447,28 @@ sequelize.sync().then(() => {
 
   // END GAME FUNCTIONS
 
+  function createScore(data) {
+    const {user, score, status} = data;
+    User.findOne({
+      where: {
+        username: user
+      }
+    }).then((user) => {
+      if(user){
+        Score.create({
+          UserId: user.dataValues.id,
+          date: Date.now(),
+          value: score,
+          status: status
+        }).then((newScore) => {
+          if(newScore){
+            console.log("Vytvoril som nove score ahaa ", newScore);
+          }
+        })
+      }
+    });
+  }
+
 
   const bufferSize = 100;
   const messageBuffer = new Array(bufferSize);
@@ -426,21 +486,10 @@ sequelize.sync().then(() => {
 
 
     io.on('connection', (socket) => {
-      //socket.emit('news', {msg: `'Hello World!' from server`});
-
-      socket.on('history', () => {
-        for (let index = 0; index < bufferSize; index++) {
-          const msgNo = (messageIndex + index) % bufferSize;
-          const msg = messageBuffer[msgNo];
-          if (msg) {
-            socket.emit('msg', msg);
-          }
-        }
-      });
 
       socket.on('game started',(username) => {
         console.log("ZACINAME ", username);
-        userSocket[username]=socket;
+        userSocket[username]= socket;
         userGame[username]=JSON.parse(JSON.stringify(defaultState));
         userGame[username].playerList[0].name=username;
         socket.emit('update state', userGame[username]);
@@ -449,7 +498,12 @@ sequelize.sync().then(() => {
       socket.on('restart game', (username) => {
         userGame[username]=JSON.parse(JSON.stringify(defaultState));
         userGame[username].playerList[0].name=username;
-        userSocket[username].emit('update state', userGame[username]);
+        userGame[username].playerList.map((player) => {
+          if(!player.isBot){
+            userGame[player.name]=userGame[username];
+            userSocket[player.name].emit('update state', userGame[username]);
+          }
+        });
       });
 
       socket.on('end turn', (username) => {
@@ -473,12 +527,196 @@ sequelize.sync().then(() => {
         pickPlayerStone(data);
       });
 
-      socket.on('msg', (data) => {
-        data.id = messageIndex;
-        messageBuffer[messageIndex % bufferSize] = data;
-        messageIndex++;
-        io.emit('msg', data);
+      socket.on('get lobbies', (user) => {
+        Lobby.findAll().then((data) => {
+          if(data){
+            userSocket[user]= socket;
+            userSocket[user].emit('update lobbies', data);
+          }
+        })
       });
+
+      socket.on('create lobby', (data) => {
+        const {user, name} = data;
+        const lobby = Lobby.create({
+          limit: 4,
+          username: user,
+          name: name,
+          players: {
+            playerList: [user]
+          }
+        });
+        lobby.then((newlobby) => {
+          if(newlobby){
+            Lobby.findOne({
+              where: {
+                id: newlobby.dataValues.id
+              }
+            }).then((dbNewLobby) => {
+              userSocket[user].emit('update lobbyRoom', dbNewLobby);
+            });
+
+            Lobby.findAll().then((data) => {
+              if(data){
+                userSocket[user]= socket;
+                socket.broadcast.emit('update lobbies', data);
+              }
+            });
+
+          }
+        });
+      });
+
+      socket.on('join lobby', (data) => {
+        const {user, id} = data;
+        Lobby.findOne({
+          where: {
+            id: id
+          }
+        }).then( (lobby) => {
+          if(lobby){
+            const newPlayerList = JSON.parse(lobby.dataValues.players).playerList;
+            if(newPlayerList.length < 4){
+              newPlayerList.push(user);
+              lobby.set("players", { playerList: newPlayerList });
+              lobby.save();
+              Lobby.findOne({
+                where: {
+                  id: id
+                }
+              }).then( (newLobby) => {
+                if(newLobby){
+                  for(let j=0; j< newPlayerList.length;j++)
+                    if(newPlayerList[j] !== 'BotPlayer')
+                      userSocket[newPlayerList[j]].emit('update lobbyRoom', newLobby);
+                }
+              });
+            }
+          }
+        })
+      });
+
+      socket.on('leave lobby', (data) => {
+        const {user, id} = data;
+        Lobby.findOne({
+          where: {
+            id: id
+          }
+        }).then( (lobby) => {
+          if(lobby){
+            const newPlayerList = JSON.parse(lobby.dataValues.players).playerList;
+            for(let i=0; i< newPlayerList.length;i++){
+              if(newPlayerList[i] === user){
+                newPlayerList.splice(i,1);
+              }
+            }
+            if(newPlayerList.length){
+              lobby.set("players", { playerList: newPlayerList });
+              lobby.save();
+              //TODO check this
+              Lobby.findOne({
+                where: {
+                  id: lobby.dataValues.id
+                }
+              }).then( (dbLobby) => {
+                if(dbLobby){
+                  for(let j=0; j< newPlayerList.length;j++) {
+                    if (newPlayerList[j] !== 'BotPlayer')
+                      userSocket[newPlayerList[j]].emit('update lobbyRoom', dbLobby);
+                  }
+                }
+              })
+            }
+            else {
+              lobby.destroy();
+            }
+
+          }
+        });
+      });
+
+      socket.on('add bot', (id) => {
+        Lobby.findOne({
+          where: {
+            id: id
+          }
+        }).then( (lobby) => {
+          if(lobby) {
+            const newPlayerList = JSON.parse(lobby.dataValues.players).playerList;
+            if(newPlayerList.length < 4) {
+              newPlayerList.push("BotPlayer");
+              lobby.set("players", {playerList: newPlayerList});
+              lobby.save();
+              Lobby.findOne({
+                where: {
+                  id: id
+                }
+              }).then((newLobby) => {
+                if (newLobby) {
+                  for (let j = 0; j < newPlayerList.length; j++)
+                    if(newPlayerList[j] !== 'BotPlayer')
+                      userSocket[newPlayerList[j]].emit('update lobbyRoom', newLobby);
+                }
+              });
+            }
+          }
+        })
+      });
+
+
+      socket.on('start game', (data) => {
+        const {user, id} = data;
+
+        Lobby.findOne({
+          where: {
+            id: id
+          }
+        }).then( (lobby) => {
+          if(lobby){
+            const PlayerList = JSON.parse(lobby.dataValues.players).playerList;
+            let gamePlayerList=[];
+            let botIndex=1;
+            PlayerList.map((name) => {
+              if(name === 'BotPlayer'){
+                gamePlayerList.push(
+                  {
+                    name: "Bot "+ botIndex,
+                    score: 0,
+                    isBot: true,
+                    stones: []
+                  }
+                )
+              }
+              else {
+                gamePlayerList.push(
+                  {
+                    name: name,
+                    score: 0,
+                    isBot: false,
+                    stones: []
+                  }
+                )
+              }
+            });
+
+
+            PlayerList.map((name) => {
+              if(name !== 'BotPlayer') {
+                userGame[name]=JSON.parse(JSON.stringify(defaultState));
+                userGame[name].playerList = gamePlayerList;
+                userGame[name].numberOfPlayers = gamePlayerList.length;
+                if(name !== user)
+                  userSocket[name].emit('go to game');
+                userSocket[name].emit('update state', userGame[name]);
+              }
+            });
+
+
+            lobby.destroy();
+          }
+        });
+      });
+
     });
     io.listen(runnable);
   } else {

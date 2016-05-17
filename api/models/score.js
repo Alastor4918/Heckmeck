@@ -4,7 +4,8 @@ export default function Score(sequelize, DataTypes) {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
     },
-    value: DataTypes.INTEGER
+    value: DataTypes.INTEGER,
+    status: DataTypes.STRING
   });
 
   return Score;

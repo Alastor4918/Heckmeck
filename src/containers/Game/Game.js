@@ -21,7 +21,7 @@ export default class Game extends Component {
         this.props.updateState(state);
       });
       if(this.props.user){
-        socket.emit('game started', this.props.user.username);
+
       }
     }
   }

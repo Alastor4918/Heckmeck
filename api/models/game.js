@@ -4,8 +4,8 @@ export default function Game(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-        Game.hasOne(models.User)
-        Game.hasMany(models.User)
+        Game.hasOne(models.User);
+        Game.hasMany(models.User);
       }
     }
   });

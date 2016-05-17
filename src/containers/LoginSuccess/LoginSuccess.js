@@ -13,6 +13,11 @@ class LoginSuccess extends Component {
     logout: PropTypes.func
   };
 
+  createGame(){
+    if(socket)
+      socket.emit('game started', this.props.user.username);
+  }
+
   render() {
     const {user, logout} = this.props;
     return (user &&
@@ -25,8 +30,8 @@ class LoginSuccess extends Component {
 
           <div>
             <button className="btn btn-danger" onClick={logout}><i className="fa fa-sign-out"/>{' '}Odhlasenie</button>
-            <Link to="/game"><button className="btn btn-primary"><i className="fa fa-play-circle"/>{' '}Rychla hra proti botovi</button></Link>
-            <button className="btn btn-success"><i className="fa fa-plus-circle"/>{' '}Rychla hra proti botovi</button>
+            <Link to="/game"><button onClick={ () => this.createGame() } className="btn btn-primary"><i className="fa fa-play-circle"/>{' '}Rychla hra proti botovi</button></Link>
+            <Link to="/lobby"><button className="btn btn-success"><i className="fa fa-plus-circle"/>{' '}Vytvorit novu hru</button></Link>
           </div>
         </div>
       </div>

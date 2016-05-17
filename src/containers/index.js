@@ -6,3 +6,5 @@ export LandingPage from './LandingPage/LandingPage';
 export Rules from './Rules/Rules';
 export Game from './Game/Game';
 export Register from './Register/Register';
+export Lobby from './Lobby/Lobby';
+export LobbyRoom from './LobbyRoom/LobbyRoom';
