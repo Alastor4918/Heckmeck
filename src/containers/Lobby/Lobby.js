@@ -88,9 +88,9 @@ export default class Lobby extends Component {
                       className={ this.props.lobby.selectedLobby === index ? styles.activeLobby : ''}
                       onClick={ () => this.setSelected(index) }
                     >
-                      <td>{ JSON.parse(lobby.players).playerList[0] }</td>
+                      <td>{ lobby.players.playerList[0] }</td>
                       <td>{ lobby.name }</td>
-                      <td>{ JSON.parse(lobby.players).playerList.length }/{ lobby.limit }</td>
+                      <td>{ lobby.players.playerList.length }/{ lobby.limit }</td>
                     </tr>
                   )
                 })}
