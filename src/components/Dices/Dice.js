@@ -16,7 +16,6 @@ export class Dice extends Component {
         <img
           className={ styles.dice }
           onClick={() => {
-                console.log("PICKUJEM SI ", {user: this.props.user.username, value:this.props.value} );
                 if(socket)
                   socket.emit('pick dice', {user: this.props.user.username, value:this.props.value})
                 }
