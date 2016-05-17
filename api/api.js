@@ -279,7 +279,6 @@ sequelize.sync().then(() => {
 
   function rollDices(user, isBot = false){
     const game = userGame[user];
-    console.log("WTF ", game, " hadzat mozes ak ", game.playerList[game.playerTurn].name, " poslal mi to ", user, " neni som ", isBot);
     if((game.playerList[game.playerTurn].name === user || isBot) && !game.dices.rolled){
       let values=[];
       for(let i=0;i<game.dices.remaining;i++){
@@ -462,7 +461,7 @@ sequelize.sync().then(() => {
           status: status
         }).then((newScore) => {
           if(newScore){
-            console.log("Vytvoril som nove score ahaa ", newScore);
+            console.log("Vytvoril som nove score ", newScore);
           }
         })
       }
@@ -488,7 +487,6 @@ sequelize.sync().then(() => {
     io.on('connection', (socket) => {
 
       socket.on('game started',(username) => {
-        console.log("ZACINAME ", username);
         userSocket[username]= socket;
         userGame[username]=JSON.parse(JSON.stringify(defaultState));
         userGame[username].playerList[0].name=username;

@@ -17,7 +17,6 @@ export default class Game extends Component {
   componentDidMount() {
     if (socket) {
       socket.on('update state', (state) => {
-        console.log("Idem updatovat state", state);
         this.props.updateState(state);
       });
       if(this.props.user){
@@ -75,7 +74,6 @@ export default class Game extends Component {
             <button
               onClick={() => {
                 if(socket){
-                  console.log("idem emitit konec kola");
                   socket.emit('end turn', this.props.user.username);
                 }
               }}

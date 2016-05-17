@@ -13,9 +13,8 @@ export default class LobbyRoom extends Component {
 
   componentDidMount() {
     if (socket) {
-      console.log("aha co mam pici", this.props);
       socket.on('update lobbyRoom', (lobbyRoom) => { this.props.joinLobby(lobbyRoom) });
-      socket.on('go to game', () => { console.log("Idem redirectovat"); this.props.pushState('/game'); })
+      socket.on('go to game', () => { this.props.pushState('/game'); })
     }
 
   }
